@@ -4,7 +4,7 @@ export type VisualType = 'map' | 'chart' | 'label' | 'hidden';
 
 export type CsvMapping = {
   index: number; // CSV column index (0-based)
-  key: keyof Telemetry; // mapped key
+  key: string; // mapped key (e.g., 'lat', 'customTemp')
   type: FieldType;
   units?: string;
   visual: VisualType;
@@ -38,6 +38,7 @@ export type AppConfig = {
     header: boolean;
     mapping: CsvMapping[];
     presets: Record<string, CsvMapping[]>;
+    keyOptions?: string[]; // selectable keys list for mapping UI
   };
   logging: {
     enabled: boolean;

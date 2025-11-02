@@ -7,7 +7,7 @@ import { useStore } from '../store';
 import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { Button } from '../components/ui/button';
-import { listTilePacks, startTileDownload, deleteTilePack } from '../lib/api';
+import { listTilePacks, startTileDownload, deleteTilePack, setConfigCore } from '../lib/api';
 import BboxPicker from '../components/BboxPicker';
 
 export default function Settings() {
@@ -27,6 +27,12 @@ export default function Settings() {
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => { refreshPacks(); }, [config.map?.offlineDir]);
+  // Push critical config to core (delimiter/header/mapping) when changed
+  React.useEffect(() => {
+    // Debounced push
+    const id = setTimeout(() => { setConfigCore(useStore.getState().config as any).catch(()=>{}); }, 300);
+    return () => clearTimeout(id);
+  }, [config.csv.delimiter, config.csv.header, config.csv.mapping]);
 
   return (
     <div className="card">

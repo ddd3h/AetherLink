@@ -38,6 +38,7 @@ const defaultConfig: AppConfig = {
     header: true,
     mapping: [],
     presets: {},
+    keyOptions: ['t','lat','lon','pressure','temperature','altitude','mode','battery','gnssFix','rssi'],
   },
   logging: {
     enabled: false,
