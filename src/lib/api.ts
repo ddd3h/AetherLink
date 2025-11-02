@@ -178,3 +178,14 @@ export async function startTileDownload(params: {
   if (!isTauri()) return;
   await tauriInvoke("start_tile_download", params as any);
 }
+
+// Logs: rename
+export async function renameLog(oldPath: string, newBaseName: string): Promise<string | null> {
+  if (!isTauri()) return null;
+  return tauriInvoke<string>("rename_log", { oldPath, newBaseName });
+}
+
+export async function deleteLog(path: string): Promise<void> {
+  if (!isTauri()) return;
+  await tauriInvoke("delete_log", { path });
+}

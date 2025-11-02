@@ -103,7 +103,26 @@ pub fn run() {
         .level(log::LevelFilter::Info)
         .build(),
     )
-    .invoke_handler(tauri::generate_handler![list_tile_packs, delete_tile_pack, start_tile_download])
+    .invoke_handler(tauri::generate_handler![list_tile_packs, delete_tile_pack, start_tile_download, rename_log, delete_log])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
+}
+
+#[tauri::command]
+fn rename_log(old_path: String, new_base_name: String) -> Result<String, String> {
+  let old = PathBuf::from(&old_path);
+  if !old.exists() { return Err("file not found".into()); }
+  let parent = old.parent().ok_or("no parent")?.to_path_buf();
+  let mut new_name = new_base_name.clone();
+  if !new_name.to_lowercase().ends_with(".csv") { new_name.push_str(".csv"); }
+  let new_path = parent.join(new_name);
+  fs::rename(&old, &new_path).map_err(|e| e.to_string())?;
+  Ok(new_path.to_string_lossy().to_string())
+}
+
+#[tauri::command]
+fn delete_log(path: String) -> Result<(), String> {
+  let p = PathBuf::from(path);
+  if !p.exists() { return Err("file not found".into()); }
+  fs::remove_file(p).map_err(|e| e.to_string())
 }
