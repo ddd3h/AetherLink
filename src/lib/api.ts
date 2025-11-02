@@ -152,3 +152,28 @@ export async function setConfigCore(cfg: AppConfig): Promise<void> {
   if (!isTauri()) return;
   await tauriInvoke("set_config", { cfg });
 }
+
+// ---- Offline tiles ----
+export type TilePackMeta = { name: string; path: string; zmin: number; zmax: number };
+export async function listTilePacks(dir: string): Promise<TilePackMeta[]> {
+  if (!isTauri()) return [];
+  return tauriInvoke<TilePackMeta[]>("list_tile_packs", { dir });
+}
+export async function deleteTilePack(path: string): Promise<void> {
+  if (!isTauri()) return;
+  await tauriInvoke("delete_tile_pack", { path });
+}
+export async function startTileDownload(params: {
+  name: string;
+  template: string;
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+  zmin: number;
+  zmax: number;
+  dir: string;
+}): Promise<void> {
+  if (!isTauri()) return;
+  await tauriInvoke("start_tile_download", params as any);
+}

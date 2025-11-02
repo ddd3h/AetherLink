@@ -47,5 +47,10 @@ export type AppConfig = {
   ui: {
     autoFollow: boolean;
   };
+  map?: {
+    providerUrl: string; // XYZ template
+    useOffline: boolean;
+    offlineDir: string;
+    activePack?: string | null; // path to pack dir
+  };
 };
-

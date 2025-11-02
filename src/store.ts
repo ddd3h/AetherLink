@@ -47,6 +47,11 @@ const defaultConfig: AppConfig = {
   ui: {
     autoFollow: true,
   },
+  map: {
+    providerUrl: 'http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga',
+    useOffline: false,
+    offlineDir: ''
+  },
 };
 
 export const useStore = create<State>()(
@@ -78,4 +83,3 @@ export const useStore = create<State>()(
     { name: 'ground-station-config' }
   )
 );
-

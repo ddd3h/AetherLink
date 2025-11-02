@@ -20,6 +20,7 @@ export default function MapView() {
   const series = useStore((s) => s.series);
   const autoFollow = useStore((s) => s.config.ui.autoFollow);
   const theme = useStore((s) => s.config.theme);
+  const mapCfg = useStore((s) => s.config.map);
 
   const mapRef = React.useRef<Map | null>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
@@ -27,6 +28,14 @@ export default function MapView() {
 
   /** スタイル読み込み後にソース/レイヤを用意する */
   const ensureSourcesAndLayers = React.useCallback((map: Map) => {
+    // raster tiles (online/offline)
+    const tilesUrl = mapCfg?.useOffline && mapCfg.activePack
+      ? `file://${mapCfg.activePack}/{z}/{x}/{y}.png`
+      : (mapCfg?.providerUrl || "");
+    if (tilesUrl && !map.getSource("tiles")) {
+      map.addSource("tiles", { type: "raster", tiles: [tilesUrl], tileSize: 256 } as any);
+      map.addLayer({ id: "tiles-layer", type: "raster", source: "tiles" } as any);
+    }
     // pos 点
     if (!map.getSource("current")) {
       map.addSource("current", {
@@ -58,7 +67,7 @@ export default function MapView() {
         paint: { "line-color": "#0ea5e9", "line-width": 3 },
       });
     }
-  }, []);
+  }, [mapCfg?.providerUrl, mapCfg?.useOffline, mapCfg?.activePack]);
 
   /** styleが完全ロードされるのを待つユーティリティ */
   const whenStyleReady = React.useCallback((map: Map, fn: () => void) => {
@@ -195,6 +204,23 @@ export default function MapView() {
       map.resize();
     });
   }, [theme, ensureSourcesAndLayers, whenStyleReady]);
+
+  // provider/offline change: replace tiles source/layer
+  React.useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const tilesUrl = mapCfg?.useOffline && mapCfg.activePack
+      ? `file://${mapCfg.activePack}/{z}/{x}/{y}.png`
+      : (mapCfg?.providerUrl || "");
+    whenStyleReady(map, () => {
+      if (map.getLayer("tiles-layer")) map.removeLayer("tiles-layer");
+      if (map.getSource("tiles")) map.removeSource("tiles");
+      if (tilesUrl) {
+        map.addSource("tiles", { type: "raster", tiles: [tilesUrl], tileSize: 256 } as any);
+        map.addLayer({ id: "tiles-layer", type: "raster", source: "tiles" } as any);
+      }
+    });
+  }, [mapCfg?.providerUrl, mapCfg?.useOffline, mapCfg?.activePack, whenStyleReady]);
 
   return (
     <div className="relative h-full min-h-[300px]" aria-label="map">
