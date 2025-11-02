@@ -39,7 +39,7 @@ export default function Settings() {
       <Tabs defaultValue="conn">
         <TabsList>
           <TabsTrigger value="conn">接続</TabsTrigger>
-          <TabsTrigger value="csv">CSVマッピング</TabsTrigger>
+          <TabsTrigger value="csv">データマッピング</TabsTrigger>
           <TabsTrigger value="disp">表示</TabsTrigger>
           <TabsTrigger value="store">保存</TabsTrigger>
         </TabsList>

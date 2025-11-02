@@ -3,8 +3,8 @@ import React from 'react';
 import MapView from '../components/MapView';
 import StatusCards from '../components/StatusCards';
 import ChartsPanel from '../components/ChartsPanel';
-import { mockStream } from '../lib/mockStream';
 import { useStore } from '../store';
+import { mockStream } from '../lib/mockStream';
 
 export default function Dashboard() {
   const append = useStore((s) => s.append);
@@ -20,12 +20,11 @@ export default function Dashboard() {
       return () => { unsub(); mockStream.stop(); };
     }
     if (isTauri) {
-      // Tauri events append directly via api.ts listener
+      // Tauri events append directly via api.ts listener (no mock when debug is OFF)
       return () => {};
     }
-    const unsub = mockStream.subscribe(append);
-    if (mode === 'live') mockStream.start();
-    return () => { unsub(); mockStream.stop(); };
+    // Non-Tauri and debug OFF: do not simulate; wait for real environment
+    return () => {};
   }, [mode, debug]);
 
   return (

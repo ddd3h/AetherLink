@@ -4,6 +4,8 @@ import { Button } from './ui/button';
 import { Sun, Moon, Radio, Circle, CirclePause, Languages } from 'lucide-react';
 import { useStore } from '../store';
 import { startLogging, stopLogging } from '../lib/api';
+import { addLog } from '../lib/logDb';
+import { toCsvHeader, telemetryToCsv } from '../lib/logFormats';
 
 export default function TopBar() {
   const { t, i18n } = useTranslation();
@@ -13,6 +15,8 @@ export default function TopBar() {
   const setConfig = useStore((s) => s.setConfig);
   const setPlaying = useStore((s) => s.setPlaying);
   const config = useStore((s) => s.config);
+  const recorderRef = (window as any)._recRef || { unsub: null as null | (()=>void), buffer: [] as any[] };
+  (window as any)._recRef = recorderRef;
 
   function toggleTheme() {
     setConfig({ theme: theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark' });
@@ -46,6 +50,19 @@ export default function TopBar() {
             const isTauri = typeof (window as any).__TAURI__ !== 'undefined'; 
             if (isTauri) { 
               if (next) await startLogging(config.logging.directory || '.', config.logging.rotationMB); else await stopLogging(); 
+            }
+            // Simple client-side recorder to logs DB
+            if (next) {
+              // start
+              recorderRef.buffer = [];
+              recorderRef.unsub = useStore.subscribe((s) => s.last, (last) => { if (last) recorderRef.buffer.push(last); });
+            } else {
+              // stop and persist to DB as CSV
+              if (recorderRef.unsub) { recorderRef.unsub(); recorderRef.unsub = null; }
+              const rows = [toCsvHeader(), ...recorderRef.buffer.map(telemetryToCsv)];
+              const name = `session_${new Date().toISOString().replace(/[:.]/g,'-')}`;
+              addLog(name, rows.join('\n'));
+              recorderRef.buffer = [];
             }
           }} aria-label={playing ? t('topbar.stop') : t('topbar.record')}>
           {playing ? <CirclePause size={16} /> : <Circle size={16} />} {playing ? t('topbar.stop') : t('topbar.record')}

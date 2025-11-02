@@ -2,19 +2,19 @@
 import React from 'react';
 import { Button } from '../components/ui/button';
 import { Slider } from '../components/ui/slider';
-import { mockStream } from '../lib/mockStream';
 import { listLogs as coreListLogs, playLog as corePlayLog, stopPlay as coreStopPlay, renameLog as coreRenameLog, deleteLog as coreDeleteLog } from '../lib/api';
 import { toCsvHeader, telemetryToCsv, parseCsvLine } from '../lib/logFormats';
+import { listLogs as dbList, getCsv as dbGetCsv, renameLog as dbRename, deleteLog as dbDelete } from '../lib/logDb';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { useStore } from '../store';
 import MapView from '../components/MapView';
 import ChartsPanel from '../components/ChartsPanel';
 
-const dummyLogs = Array.from({ length: 8 }, (_, i) => ({ id: `log-${i + 1}`, name: `2024-11-0${(i % 9) + 1}_flight_${i + 1}` }));
+// No mock logs; only Tauri-provided list or user-imported CSV into memory
 
 export default function Replay() {
-  const [logs, setLogs] = React.useState<{ id: string; name: string }[]>(dummyLogs);
-  const [selected, setSelected] = React.useState<string | null>(dummyLogs[0].id);
+  const [logs, setLogs] = React.useState<{ id: string; name: string }[]>([]);
+  const [selected, setSelected] = React.useState<string | null>(null);
   const [speed, setSpeed] = React.useState<0.5 | 1 | 2>(1);
   const [pos, setPos] = React.useState(0);
   const append = useStore((s) => s.append);
@@ -27,12 +27,16 @@ export default function Replay() {
 
   async function refreshLogs() {
     const isTauri = typeof (window as any).__TAURI__ !== 'undefined';
-    if (!isTauri) return;
-    // assume logs directory configured elsewhere; here we use default home logs
-    const dir = useStore.getState().config.logging.directory || '';
-    const list = await coreListLogs(dir);
-    setLogs(list.map((l) => ({ id: l.file, name: l.file.split('/').pop() || l.file })));
-    if (list.length) setSelected(list[0].file);
+    const dbLogs = dbList().map((l)=> ({ id: l.id, name: l.name }));
+    let tauriLogs: { id: string; name: string }[] = [];
+    if (isTauri) {
+      const dir = useStore.getState().config.logging.directory || '';
+      const list = await coreListLogs(dir);
+      tauriLogs = list.map((l) => ({ id: l.file, name: l.file.split('/').pop() || l.file }));
+    }
+    const merged = [...dbLogs, ...tauriLogs];
+    setLogs(merged);
+    if (merged.length) setSelected(merged[0].id);
   }
 
   React.useEffect(() => { refreshLogs(); }, []);
@@ -42,18 +46,27 @@ export default function Replay() {
     clear();
     setMode('replay');
     const isTauri = typeof (window as any).__TAURI__ !== 'undefined';
-    if (isTauri) {
+    if (isTauri && (selected.includes('/') || selected.includes('\\'))) {
       corePlayLog(selected, speed);
       let i = 0;
       const id = window.setInterval(() => { i = (i + speed) % 600; setPos(i); }, 1000);
       return () => { window.clearInterval(id); coreStopPlay(); };
-    } else {
-      mockStream.play(selected, speed as any);
-      let i = 0;
-      const id = window.setInterval(() => { i = (i + speed) % 600; setPos(i); }, 1000);
-      const unsub = mockStream.subscribe(append);
-      return () => { window.clearInterval(id); unsub(); mockStream.stop(); };
     }
+    // DB log playback
+    const csv = dbGetCsv(selected);
+    if (!csv) return () => {};
+    const lines = csv.split(/\r?\n/).filter((l)=>l.trim().length>0);
+    const first = lines[0];
+    const delim = [',',';','\t'].sort((a,b)=> (first.split(b).length - first.split(a).length))[0];
+    let i = 1; // skip header
+    const id = window.setInterval(() => {
+      if (i >= lines.length) { i = 1; }
+      const t = parseCsvLine(lines[i], useStore.getState().config.csv.mapping, delim);
+      append(t);
+      i++;
+      setPos((p)=> (p+speed)%600);
+    }, 1000);
+    return () => { window.clearInterval(id); };
   }
 
   const stopRef = React.useRef<(() => void) | null>(null);
@@ -98,7 +111,8 @@ export default function Replay() {
         setSelected(res);
       }
     } else {
-      setLogs((ls)=> ls.map(l=> l.id===selected? ({...l, name: newName}):l));
+      dbRename(selected, newName);
+      await refreshLogs();
     }
   }
 
@@ -120,7 +134,8 @@ export default function Replay() {
       await refreshLogs();
       if (selected === id) setSelected(null);
     } else {
-      setLogs((ls)=> ls.filter(l=> l.id!==id));
+      dbDelete(id);
+      await refreshLogs();
       if (selected === id) setSelected(null);
     }
   }

@@ -1,6 +1,7 @@
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::{fs, path::PathBuf, thread, time::Duration};
+use std::{fs, path::PathBuf, thread};
+use tauri::Emitter;
 
 #[tauri::command]
 fn list_tile_packs(dir: String) -> Result<Vec<TilePackMeta>, String> {

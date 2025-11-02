@@ -46,24 +46,10 @@ export default function CsvMapper() {
     let stopped = false;
     let unlisten: null | (() => void) = null;
     let timer: any = null;
+    const tauri = isTauri();
     (async () => {
-      if (isTauri() && !debug) {
-        try {
-          const mod = await import(/* @vite-ignore */ '@tauri-apps/api/event');
-          unlisten = await mod.listen<string>('raw_line', (e) => {
-            if (stopped) return;
-            const line = String(e.payload || '').trim();
-            setRawLines((prev) => {
-              const next = [...prev, line].slice(-10);
-              return next;
-            });
-          });
-        } catch (e) {
-          console.warn('listen raw_line failed, fallback to mock', e);
-        }
-      }
-      if (!unlisten && debug) {
-        // fallback mock generator
+      if (debug) {
+        // Debug mode: generate demo UART-like lines every second
         timer = setInterval(() => {
           const mk = () => [
             String(Date.now()),
@@ -76,6 +62,19 @@ export default function CsvMapper() {
           ].join(config.csv.delimiter);
           setRawLines((prev) => [...prev, mk()].slice(-10));
         }, 1000);
+        return;
+      }
+      if (tauri) {
+        try {
+          const mod = await import(/* @vite-ignore */ '@tauri-apps/api/event');
+          unlisten = await mod.listen<string>('raw_line', (e) => {
+            if (stopped) return;
+            const line = String(e.payload || '').trim();
+            setRawLines((prev) => [...prev, line].slice(-10));
+          });
+        } catch (e) {
+          console.warn('listen raw_line failed', e);
+        }
       }
     })();
     return () => {
@@ -83,7 +82,7 @@ export default function CsvMapper() {
       try { unlisten && unlisten(); } catch {}
       if (timer) clearInterval(timer);
     };
-  }, [liveEnabled, config.csv.delimiter, debug]);
+  }, [liveEnabled, debug, config.csv.delimiter]);
 
   function onDropColToKey(colIndex: number, key: string) {
     const exist = mapping.find((m) => m.key === key);
