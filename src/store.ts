@@ -46,6 +46,7 @@ const defaultConfig: AppConfig = {
   },
   ui: {
     autoFollow: true,
+    followTarget: 'telemetry',
   },
   map: {
     providerUrl: 'http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga',

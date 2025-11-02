@@ -46,6 +46,7 @@ export type AppConfig = {
   };
   ui: {
     autoFollow: boolean;
+    followTarget?: 'telemetry' | 'me' | 'none';
   };
   map?: {
     providerUrl: string; // XYZ template

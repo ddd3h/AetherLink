@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Switch } from '../components/ui/switch';
 import { Button } from '../components/ui/button';
 import { listTilePacks, startTileDownload, deleteTilePack } from '../lib/api';
+import BboxPicker from '../components/BboxPicker';
 
 export default function Settings() {
   const config = useStore((s) => s.config);
@@ -71,6 +72,7 @@ export default function Settings() {
             </div>
             <div className="md:col-span-3 card mt-2">
               <div className="text-sm font-medium mb-2">タイルパックのダウンロード</div>
+              <BboxPicker bbox={bbox} onChange={setBbox} tiles={config.map?.providerUrl || ''} />
               <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
                 <div><label className="block text-xs">北(N)</label><Input type="number" value={bbox.north} onChange={e=>setBbox({...bbox, north: parseFloat(e.target.value)})} /></div>
                 <div><label className="block text-xs">南(S)</label><Input type="number" value={bbox.south} onChange={e=>setBbox({...bbox, south: parseFloat(e.target.value)})} /></div>
