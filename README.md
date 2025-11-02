@@ -12,8 +12,6 @@
   <a href="https://tailwindcss.com" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38BDF8.svg?logo=tailwindcss&logoColor=white" alt="TailwindCSS"/></a>
 </p>
 
----
-
 ## 🚀 Overview
 
 **AetherLink** is a next-generation **Ground Station GUI** designed for space telemetry visualization — fast, elegant, and open to all.
@@ -22,8 +20,6 @@ Built with modern web technologies and **Tauri** for desktop deployment, it enab
 Even with mock data, it delivers a complete, interactive dashboard ready for real-world integration.
 
 > ✨ *“From Spaceball to Station — visualize the unseen.”*
-
----
 
 ## 🧩 Features
 
@@ -48,8 +44,6 @@ Even with mock data, it delivers a complete, interactive dashboard ready for rea
 - 🌗 **Dark/Light Mode + Responsive + A11y**
   Fully accessible design with shadcn/ui components and Tailwind theming.
 
----
-
 ## 🛠️ Tech Stack
 
 | Category | Technology |
@@ -65,8 +59,6 @@ Even with mock data, it delivers a complete, interactive dashboard ready for rea
 | Desktop | **Tauri (mocked)** |
 | Tooling | **ESLint**, **Prettier** |
 
----
-
 ## 🧱 Architecture Overview
 
 ```
@@ -80,16 +72,12 @@ src/
 ├─ mocks/          # Dummy data and mock APIs
 └─ App.tsx         # Router & Layout
 
-````
-
----
+```
 
 ## 🌐 Internationalization
 
 Supports **English** 🇬🇧 and **Japanese** 🇯🇵 via `react-i18next`.  
 Language toggle is available in the UI header.
-
----
 
 ## 🧭 Roadmap
 
@@ -113,11 +101,9 @@ If you’re passionate about space, telemetry, or beautiful UI — jump in 🚀
    ```bash
    pnpm install
    pnpm dev
-````
+   ```
 
 3. Open a PR with clear description and screenshots.
-
----
 
 ## 💖 Sponsors
 
@@ -131,8 +117,6 @@ If you’re passionate about space, telemetry, or beautiful UI — jump in 🚀
   <img src="https://avatars.githubusercontent.com/u/22222222?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="Sponsor 3"/>
 </p>
 
----
-
 ## 👥 Contributors
 
 <p align="center">
@@ -140,13 +124,9 @@ If you’re passionate about space, telemetry, or beautiful UI — jump in 🚀
   <a href="https://github.com/otherdev"><img src="https://avatars.githubusercontent.com/u/otherid?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="otherdev"/></a>
 </p>
 
----
-
 ## 📜 License
 
 MIT © 2025 [Your Name](https://github.com/yourname)
-
----
 
 ## 🌌 Vision
 
