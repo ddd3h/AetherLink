@@ -1,57 +1,156 @@
-# Ground Station GUI (UI-only)
+<h1 align="center">🛰️ AetherLink</h1>
+<p align="center">
+  <em>Modern Ground Station GUI — built for open, extensible telemetry visualization.</em><br/>
+  <strong>Vite + React + TypeScript + Tailwind + shadcn/ui + Tauri</strong>
+</p>
 
-This is a modern React 18 + Vite + TypeScript UI for a ground station. All IO is mocked; the UI streams dummy telemetry at 1 Hz and supports map, charts, status, settings, and replay.
+<p align="center">
+  <a href="https://vitejs.dev" target="_blank"><img src="https://img.shields.io/badge/Vite-646CFF.svg?logo=vite&logoColor=white" alt="Vite"/></a>
+  <a href="https://react.dev" target="_blank"><img src="https://img.shields.io/badge/React-149ECA.svg?logo=react&logoColor=white" alt="React"/></a>
+  <a href="https://tauri.app" target="_blank"><img src="https://img.shields.io/badge/Tauri-FFC131.svg?logo=tauri&logoColor=white" alt="Tauri"/></a>
+  <a href="https://typescriptlang.org" target="_blank"><img src="https://img.shields.io/badge/TypeScript-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript"/></a>
+  <a href="https://tailwindcss.com" target="_blank"><img src="https://img.shields.io/badge/Tailwind_CSS-38BDF8.svg?logo=tailwindcss&logoColor=white" alt="TailwindCSS"/></a>
+</p>
 
-## Quick Start
+---
 
-- Node 18+
-- Install deps: `npm i`
-- Run dev server (browser only mock): `npm run dev` and open http://localhost:5173
-- Test: `npm test`
+## 🚀 Overview
 
-## Tauri (Rust Core)
+**AetherLink** is a next-generation **Ground Station GUI** designed for space telemetry visualization — fast, elegant, and open to all.
 
-This repo includes a Tauri core under `src-tauri/` that handles serial autodetect, CSV parsing, telemetry streaming, logging, and replay.
+Built with modern web technologies and **Tauri** for desktop deployment, it enables real-time telemetry monitoring, map-based visualization, and flexible data mapping.  
+Even with mock data, it delivers a complete, interactive dashboard ready for real-world integration.
 
-### Dev run
+> ✨ *“From Spaceball to Station — visualize the unseen.”*
 
-```bash
-# install deps
-npm install
-# initialize Tauri if needed (skip if done)
-# npm create tauri-app@latest .
-# run app with core
-npm run tauri dev
+---
+
+## 🧩 Features
+
+- 🌍 **Dynamic Map Display (MapLibre GL JS)**  
+  Offline-friendly tiles with current position and trajectory overlays.
+
+- 📊 **Real-time Style Graphs (ECharts)**  
+  Pressure, temperature, altitude — simulated live updates with beautiful charts.
+
+- ⚙️ **Settings Panel**  
+  Serial auto-detection UI, CSV mapping editor, and persistent configurations.
+
+- 🧠 **Reactive Architecture**
+  - Zustand → UI state  
+  - TanStack Query → async data (mocked for now)  
+  - React Router → modular navigation  
+  - react-i18next → English & Japanese
+
+- 💾 **Logging & Replay System**
+  Mocked UI for recording and replaying telemetry timelines (CSV-based).
+
+- 🌗 **Dark/Light Mode + Responsive + A11y**
+  Fully accessible design with shadcn/ui components and Tailwind theming.
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technology |
+|-----------|-------------|
+| Language | **TypeScript** |
+| Framework | **React 18 + Vite** |
+| Styling | **Tailwind CSS + shadcn/ui** |
+| State Management | **Zustand**, **TanStack Query** |
+| Charts | **ECharts (echarts-for-react)** |
+| Maps | **MapLibre GL JS** |
+| Routing | **React Router** |
+| i18n | **react-i18next (ja/en)** |
+| Desktop | **Tauri (mocked)** |
+| Tooling | **ESLint**, **Prettier** |
+
+---
+
+## 🧱 Architecture Overview
+
 ```
 
-### Build
+src/
+├─ components/     # UI building blocks (cards, charts, map, panels)
+├─ pages/          # Routes (Dashboard, Settings, Replay)
+├─ stores/         # Zustand states
+├─ hooks/          # Custom hooks
+├─ types.ts        # Type definitions for telemetry, mapping, and UI
+├─ mocks/          # Dummy data and mock APIs
+└─ App.tsx         # Router & Layout
 
-```bash
-npm run tauri build
-```
+````
 
-The UI uses `@tauri-apps/api` to invoke core commands. When running in browser `npm run dev`, the UI falls back to local mocks.
+---
 
-## Tech Stack
+## 🌐 Internationalization
 
-React 18, Vite, TypeScript, Tailwind CSS, shadcn-style UI (local components), Zustand (UI state), TanStack Query (future API), ECharts, MapLibre GL, React Router, react-i18next, lucide-react. ESLint + Prettier configured.
+Supports **English** 🇬🇧 and **Japanese** 🇯🇵 via `react-i18next`.  
+Language toggle is available in the UI header.
 
-## Structure
+---
 
-- `src/pages/` — `Dashboard`, `Settings`, `Replay`, `About`
-- `src/components/` — `MapView`, `ChartsPanel`, `StatusCards`, `SerialSelector`, `CsvMapper`, `TopBar`, `SideNav`, and `ui/*` primitives
-- `src/lib/` — `api.ts` (mock boundary), `mockStream.ts` (1 Hz generator)
-- `src/store.ts` — Zustand store with persist
-- `src/i18n.ts`, `src/locales/` — i18n init and translations
+## 🧭 Roadmap
 
-## Screenshots
+| Phase | Description | Status |
+|-------|--------------|--------|
+| ✅ UI Prototype | Static mock UI with map, charts, settings | Done |
+| 🧩 Mapping System | CSV key-type-unit-display linking | Done |
+| 🛰️ Tauri Integration | UART + Log control bridge | Pending |
+| 📦 Offline Tiles | BBOX download progress + file I/O | Planned |
+| ⏯️ Replay Improvements | Pause / Resume, scrub timeline | Planned |
 
-- Dashboard: Map with track + status cards + charts
-- Settings: Serial, CSV mapping DnD, display, storage
-- Replay: Logs list + timeline + playback
+---
 
-## Notes
+## 👩‍💻 Contributing
 
-- Map style is offline placeholder, center [139.76, 35.68], zoom 9.
-- Charts show pressure/temperature/altitude. No animation.
-- API boundary is mock; replace with Tauri invoke in `src/lib/api.ts` later.
+Contributions are welcome!  
+If you’re passionate about space, telemetry, or beautiful UI — jump in 🚀
+
+1. Fork the repository
+2. Run locally:
+   ```bash
+   pnpm install
+   pnpm dev
+````
+
+3. Open a PR with clear description and screenshots.
+
+---
+
+## 💖 Sponsors
+
+<p align="center">
+  <a href="https://github.com/sponsors/yourname"><img src="https://img.shields.io/badge/Sponsor-AetherLink-pink?logo=heart" alt="Sponsor"/></a>
+</p>
+
+<p align="center">
+  <img src="https://avatars.githubusercontent.com/u/00000000?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="Sponsor 1"/>
+  <img src="https://avatars.githubusercontent.com/u/11111111?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="Sponsor 2"/>
+  <img src="https://avatars.githubusercontent.com/u/22222222?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="Sponsor 3"/>
+</p>
+
+---
+
+## 👥 Contributors
+
+<p align="center">
+  <a href="https://github.com/yourname"><img src="https://avatars.githubusercontent.com/u/yourid?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="you"/></a>
+  <a href="https://github.com/otherdev"><img src="https://avatars.githubusercontent.com/u/otherid?v=4" width="60" height="60" style="border-radius:50%; margin: 0 10px;" alt="otherdev"/></a>
+</p>
+
+---
+
+## 📜 License
+
+MIT © 2025 [Your Name](https://github.com/yourname)
+
+---
+
+## 🌌 Vision
+
+> “AetherLink bridges the gap between data and discovery — empowering anyone to explore, visualize, and understand signals from beyond.”
+
+Join the journey. Contribute. Extend.
+Together, we can make space more accessible 🚀
