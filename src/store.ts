@@ -27,6 +27,7 @@ const defaultConfig: AppConfig = {
   theme: 'system',
   language: 'ja',
   autodetect: false,
+  debug: false,
   serial: {
     preferredVendorIds: [],
     baudCandidates: [9600, 19200, 38400, 57600, 115200],

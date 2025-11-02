@@ -27,6 +27,7 @@ export type AppConfig = {
   theme: 'light' | 'dark' | 'system';
   language: 'ja' | 'en';
   autodetect: boolean;
+  debug?: boolean; // when ON, use demo data every second instead of real UART
   serial: {
     preferredVendorIds: number[];
     baudCandidates: number[];

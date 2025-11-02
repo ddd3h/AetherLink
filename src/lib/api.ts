@@ -38,6 +38,7 @@ export async function initBackendListeners() {
   const { listen } = await import(/* @vite-ignore */ TAURI_EVENT_MOD);
 
   listen<Telemetry>("telemetry", (e) => {
+    if (useStore.getState().config.debug) return; // ignore real UART while debug mode is ON
     useStore.getState().append(e.payload);
   });
 

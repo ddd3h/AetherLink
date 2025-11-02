@@ -10,9 +10,15 @@ export default function Dashboard() {
   const append = useStore((s) => s.append);
   const clear = useStore((s) => s.clear);
   const mode = useStore((s) => s.mode);
+  const debug = useStore((s) => s.config.debug);
   React.useEffect(() => {
     const isTauri = typeof (window as any).__TAURI__ !== 'undefined';
     clear();
+    if (debug) {
+      const unsub = mockStream.subscribe(append);
+      mockStream.start();
+      return () => { unsub(); mockStream.stop(); };
+    }
     if (isTauri) {
       // Tauri events append directly via api.ts listener
       return () => {};
@@ -20,7 +26,7 @@ export default function Dashboard() {
     const unsub = mockStream.subscribe(append);
     if (mode === 'live') mockStream.start();
     return () => { unsub(); mockStream.stop(); };
-  }, [mode]);
+  }, [mode, debug]);
 
   return (
     <div className="grid-12">

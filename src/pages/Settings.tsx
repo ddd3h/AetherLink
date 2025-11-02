@@ -55,6 +55,11 @@ export default function Settings() {
               <label className="block text-sm mb-1">地図追従</label>
               <Switch checked={config.ui.autoFollow} onCheckedChange={(v) => setConfig({ ui: { ...config.ui, autoFollow: v } })} />
             </div>
+            <div>
+              <label className="block text-sm mb-1">デバッグモード</label>
+              <Switch checked={!!config.debug} onCheckedChange={(v) => setConfig({ debug: v })} />
+              <div className="text-xs text-neutral-500 mt-1">ON: デモデータを毎秒受信 / OFF: 実機UARTのみ</div>
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm mb-1">タイルURL (XYZ)</label>
               <Input

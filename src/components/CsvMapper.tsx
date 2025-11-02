@@ -33,6 +33,7 @@ function useDummyCSV(header: boolean, delimiter: string) {
 export default function CsvMapper() {
   const config = useStore((s) => s.config);
   const setConfig = useStore((s) => s.setConfig);
+  const debug = useStore((s) => s.config.debug);
   const mapping = config.csv.mapping;
   const [presetName, setPresetName] = React.useState('default');
   const preview = useDummyCSV(config.csv.header, config.csv.delimiter);
@@ -46,7 +47,7 @@ export default function CsvMapper() {
     let unlisten: null | (() => void) = null;
     let timer: any = null;
     (async () => {
-      if (isTauri()) {
+      if (isTauri() && !debug) {
         try {
           const mod = await import(/* @vite-ignore */ '@tauri-apps/api/event');
           unlisten = await mod.listen<string>('raw_line', (e) => {
@@ -61,7 +62,7 @@ export default function CsvMapper() {
           console.warn('listen raw_line failed, fallback to mock', e);
         }
       }
-      if (!unlisten) {
+      if (!unlisten && debug) {
         // fallback mock generator
         timer = setInterval(() => {
           const mk = () => [
@@ -82,7 +83,7 @@ export default function CsvMapper() {
       try { unlisten && unlisten(); } catch {}
       if (timer) clearInterval(timer);
     };
-  }, [liveEnabled, config.csv.delimiter]);
+  }, [liveEnabled, config.csv.delimiter, debug]);
 
   function onDropColToKey(colIndex: number, key: string) {
     const exist = mapping.find((m) => m.key === key);
