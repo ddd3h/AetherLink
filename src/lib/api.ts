@@ -45,6 +45,17 @@ export async function initBackendListeners() {
   listen<{ level: string; message: string }>("status", (e) => {
     console.debug("[status]", e.payload);
   });
+
+  // Fallback: parse raw_line on UI side and append (ensures Dashboard updates even if Core emits only raw_line)
+  listen<string>("raw_line", async (e) => {
+    if (useStore.getState().config.debug) return;
+    const line = String(e.payload || '');
+    const mapping = useStore.getState().config.csv.mapping || [];
+    const { parseCsvLine } = await import('../lib/logFormats');
+    const delim = line.includes('\t') ? '\t' : (line.includes(';') ? ';' : ',');
+    const t = parseCsvLine(line, mapping as any, delim);
+    useStore.getState().append(t as any);
+  });
 }
 
 // ---- Tauri invoke の薄いラッパ ----

@@ -2,6 +2,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf, thread};
 use tauri::Emitter;
+mod serial;
 
 #[tauri::command]
 fn list_tile_packs(dir: String) -> Result<Vec<TilePackMeta>, String> {
@@ -104,10 +105,14 @@ pub fn run() {
         .level(log::LevelFilter::Info)
         .build(),
     )
-    .invoke_handler(tauri::generate_handler![list_tile_packs, delete_tile_pack, start_tile_download, rename_log, delete_log])
+    .manage(serial::SerialState::new())
+    .invoke_handler(tauri::generate_handler![list_tile_packs, delete_tile_pack, start_tile_download, rename_log, delete_log, serial::list_ports, serial::connect, serial::disconnect, start_autodetect])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
+
+#[tauri::command]
+fn start_autodetect() -> Result<(), String> { Ok(()) }
 
 #[tauri::command]
 fn rename_log(old_path: String, new_base_name: String) -> Result<String, String> {
